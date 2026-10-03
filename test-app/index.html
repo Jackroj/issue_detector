@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Issue Detector Test App</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        max-width: 640px;
+        margin: 40px auto;
+        padding: 0 16px;
+      }
+      button {
+        display: block;
+        width: 100%;
+        margin: 8px 0;
+        padding: 10px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      h2 {
+        margin-top: 28px;
+      }
+      #log {
+        margin-top: 20px;
+        font-family: monospace;
+        font-size: 12px;
+        white-space: pre-wrap;
+        background: #f5f5f5;
+        padding: 10px;
+        border-radius: 6px;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Issue Detector Test App</h1>
+    <p>
+      Open the extension popup or DevTools "Issue Detector" panel, then click these buttons to
+      trigger each kind of finding.
+    </p>
+
+    <h2>Network</h2>
+    <button id="btn-404">Trigger a 404 request</button>
+    <button id="btn-500">Trigger a 500 request</button>
+    <button id="btn-repeat">Fire 6 calls to the same endpoint (repeated calls)</button>
+    <button id="btn-duplicate">Fire 4 rapid duplicate calls (duplicate calls)</button>
+    <button id="btn-slow">Trigger a slow request (~4s)</button>
+    <button id="btn-repeated-failures">Fire 3 calls to a failing endpoint (repeated failures)</button>
+    <button id="btn-polling">Start/stop regular polling every 2s (excessive polling)</button>
+
+    <h2>JavaScript</h2>
+    <button id="btn-throw">Throw an uncaught error</button>
+    <button id="btn-reject">Trigger an unhandled promise rejection</button>
+    <button id="btn-console-error">Log a console.error</button>
+
+    <h2>Performance</h2>
+    <button id="btn-large-image">Load a large image (~2MB)</button>
+    <button id="btn-long-task">Run a long synchronous task (~200ms, large JS execution)</button>
+    <button id="btn-large-script">Load a large external JS bundle (large JS bundle)</button>
+    <button id="btn-slow-resource">Load a slow non-API resource (~2.5s, slow resource)</button>
+
+    <h2>Rendering</h2>
+    <button id="btn-dom-burst">Insert 200 DOM nodes in one batch (excessive DOM mutations)</button>
+    <button id="btn-repeated-updates">Insert nodes in 10 staggered batches (repeated updates)</button>
+    <button id="btn-layout-shift">Trigger repeated layout shifts (layout problems)</button>
+
+    <h2>Correlation &amp; SPA state</h2>
+    <button id="btn-state-change">Trigger a pushState navigation (SPA state change)</button>
+    <button id="btn-correlated-chain">
+      Trigger slow API + long task back-to-back (correlated finding)
+    </button>
+
+    <div id="shift-target" style="height: 1px"></div>
+
+    <div id="log"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
