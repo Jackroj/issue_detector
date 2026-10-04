@@ -115,6 +115,16 @@ chrome.runtime.onMessage.addListener((message: RuntimeMessage, sender, sendRespo
   return true; // keep the message channel open for the async response
 });
 
+// TEMP DEBUG — remove after verifying the UI: lets a content script ask the background
+// (which has chrome.tabs access) to open one of the extension's own pages as a normal tab,
+// so it can be inspected without visiting chrome://extensions.
+chrome.runtime.onMessage.addListener((message: unknown) => {
+  if (typeof message === "object" && message !== null && (message as { type?: string }).type === "debug:openPage") {
+    const path = (message as { path: string }).path;
+    chrome.tabs.create({ url: chrome.runtime.getURL(path) });
+  }
+});
+
 async function handleMessage(
   message: RuntimeMessage,
   sender: chrome.runtime.MessageSender,

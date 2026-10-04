@@ -46,6 +46,14 @@ async function getSettings(): Promise<DetectorSettings> {
 }
 
 async function main(): Promise<void> {
+  // TEMP DEBUG — remove after verifying the UI. Scoped to the test app only so it doesn't
+  // fire (and spawn tabs) on every other page the content script is injected into.
+  if (location.port === "8731") {
+    console.log("[issue-detector] extension id:", chrome.runtime.id);
+    chrome.runtime.sendMessage({ type: "debug:openPage", path: "popup/popup.html" });
+    chrome.runtime.sendMessage({ type: "debug:openPage", path: "options/options.html" });
+  }
+
   const settings = await getSettings();
 
   installStateChangeRelay();

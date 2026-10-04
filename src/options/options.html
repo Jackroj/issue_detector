@@ -3,122 +3,134 @@
   <head>
     <meta charset="utf-8" />
     <title>Issue Detector Settings</title>
+    <link rel="icon" href="../icons/icon32.png" />
+    <link rel="stylesheet" href="../shared/theme.css" />
     <link rel="stylesheet" href="options.css" />
   </head>
   <body>
-    <h1>Issue Detector Settings</h1>
-    <p class="hint">
-      These thresholds control what counts as a "slow", "large", or "repeated" issue. Request/response
-      bodies are never captured, regardless of these settings.
-    </p>
-
-    <form id="settings-form">
-      <fieldset>
-        <legend>Categories</legend>
-        <label><input type="checkbox" name="enabled_network" /> Network</label>
-        <label><input type="checkbox" name="enabled_javascript" /> JavaScript</label>
-        <label><input type="checkbox" name="enabled_performance" /> Performance</label>
-        <label><input type="checkbox" name="enabled_rendering" /> Rendering</label>
-        <label><input type="checkbox" name="enabled_correlated" /> Correlated insights</label>
-      </fieldset>
-
-      <fieldset>
-        <legend>Network</legend>
-        <label>Slow request threshold (ms) <input type="number" name="slowRequestMs" min="0" /></label>
-        <label>Repeated-call window (ms) <input type="number" name="repeatedWindowMs" min="0" /></label>
-        <label>Repeated-call threshold (count) <input type="number" name="repeatedThreshold" min="1" /></label>
-        <label>Duplicate-call window (ms) <input type="number" name="duplicateWindowMs" min="0" /></label>
-        <label>Duplicate-call threshold (count) <input type="number" name="duplicateThreshold" min="1" /></label>
-        <label>Repeated-failure threshold (count) <input type="number" name="repeatedFailureThreshold" min="1" /></label>
-      </fieldset>
-
-      <fieldset>
-        <legend>Polling detection</legend>
-        <label>Polling window (ms) <input type="number" name="pollingWindowMs" min="0" /></label>
-        <label>Polling threshold (count) <input type="number" name="pollingThreshold" min="1" /></label>
-        <label>Regularity tolerance (0–1, lower = stricter) <input type="number" step="0.05" name="pollingRegularityTolerance" min="0" max="1" /></label>
-        <label>State-change proximity (ms) <input type="number" name="stateChangeProximityMs" min="0" /></label>
-      </fieldset>
-
-      <fieldset>
-        <legend>Performance</legend>
-        <label>Slow resource threshold (ms) <input type="number" name="slowResourceMs" min="0" /></label>
-        <label>Large resource threshold (bytes) <input type="number" name="largeResourceBytes" min="0" /></label>
-        <label>Large JS bundle threshold (bytes) <input type="number" name="largeScriptBytes" min="0" /></label>
-        <label>Long task threshold (ms) <input type="number" name="longTaskMs" min="0" /></label>
-        <label>DOMContentLoaded warning (ms) <input type="number" name="domContentLoadedWarnMs" min="0" /></label>
-        <label>Page load warning (ms) <input type="number" name="pageLoadWarnMs" min="0" /></label>
-      </fieldset>
-
-      <fieldset>
-        <legend>Rendering</legend>
-        <label>DOM mutation window (ms) <input type="number" name="domMutationWindowMs" min="0" /></label>
-        <label>DOM mutation threshold (count) <input type="number" name="domMutationThreshold" min="1" /></label>
-        <label>Update-burst window (ms) <input type="number" name="domMutationBurstWindowMs" min="0" /></label>
-        <label>Update-burst threshold (batches) <input type="number" name="domMutationBurstThreshold" min="1" /></label>
-        <label>Large DOM update threshold (nodes) <input type="number" name="largeDomUpdateNodeThreshold" min="1" /></label>
-        <label>Layout-shift window (ms) <input type="number" name="layoutShiftWindowMs" min="0" /></label>
-        <label>Layout-shift count threshold <input type="number" name="layoutShiftCountThreshold" min="1" /></label>
-        <label>Layout-shift score threshold <input type="number" step="0.05" name="layoutShiftScoreThreshold" min="0" /></label>
-      </fieldset>
-
-      <fieldset>
-        <legend>Correlation</legend>
-        <label>Correlation window (ms) <input type="number" name="correlationWindowMs" min="0" /></label>
-      </fieldset>
-
-      <fieldset>
-        <legend>Storage</legend>
-        <label>Max findings kept per tab <input type="number" name="maxFindingsPerTab" min="10" /></label>
-        <label>Max timeline events kept per tab <input type="number" name="maxTimelineEventsPerTab" min="10" /></label>
-      </fieldset>
-
-      <fieldset id="ai-fieldset">
-        <legend>AI Assistant</legend>
-
-        <p class="hint ai-privacy-note">
-          <strong>Off by default.</strong> When enabled, the "Analyze with AI" button on a finding sends
-          only structured data to the provider below: the finding's title/description/evidence (already
-          shown in this UI), nearby timeline entries, and related finding titles. It <strong>never</strong>
-          sends request/response bodies, cookies, or page source — those are never collected in the first
-          place. Anything that looks like a token, JWT, or email address in a URL is redacted before
-          sending, even to a local provider.
-        </p>
-
-        <label><input type="checkbox" name="ai_enabled" /> Enable the AI assistant</label>
-
-        <label>
-          Provider
-          <select name="ai_provider" id="ai-provider-select">
-            <option value="heuristic">Rule-based (no model, works offline)</option>
-            <option value="ollama">Ollama — local open-weight model</option>
-            <option value="chrome-builtin">Chrome on-device AI (Gemini Nano)</option>
-          </select>
-        </label>
-
-        <div id="ollama-fields">
-          <label>Ollama endpoint <input type="text" name="ai_ollamaEndpoint" /></label>
-          <label>Ollama model <input type="text" name="ai_ollamaModel" /></label>
-          <p class="hint">
-            Requires <a href="https://ollama.com" target="_blank" rel="noopener">Ollama</a> running locally
-            with a model pulled (e.g. <code>ollama pull llama3.2</code>). If the check below fails with a
-            connection error, start Ollama with <code>OLLAMA_ORIGINS=chrome-extension://*</code> set so it
-            accepts requests from this extension.
-          </p>
-        </div>
-
-        <div class="actions">
-          <button type="button" id="ai-check-btn" class="btn btn-secondary">Check provider availability</button>
-          <span id="ai-check-status"></span>
-        </div>
-      </fieldset>
-
-      <div class="actions">
-        <button type="submit" class="btn">Save</button>
-        <button type="button" id="reset-btn" class="btn btn-secondary">Reset to defaults</button>
-        <span id="status"></span>
+    <header class="app-header">
+      <div class="brand">
+        <img class="brand-logo" src="../icons/icon32.png" alt="" width="24" height="24" />
+        <h1>Issue Detector Settings</h1>
       </div>
-    </form>
+    </header>
+
+    <div class="shell">
+      <p class="hint">
+        These thresholds control what counts as a "slow", "large", or "repeated" issue.
+        Request/response bodies are never captured, regardless of these settings.
+      </p>
+
+      <form id="settings-form">
+        <div class="card-grid">
+          <fieldset class="card">
+            <legend>Categories</legend>
+            <label class="switch-row"><span>Network</span><span class="switch"><input type="checkbox" name="enabled_network" /><span class="switch-track"></span></span></label>
+            <label class="switch-row"><span>JavaScript</span><span class="switch"><input type="checkbox" name="enabled_javascript" /><span class="switch-track"></span></span></label>
+            <label class="switch-row"><span>Performance</span><span class="switch"><input type="checkbox" name="enabled_performance" /><span class="switch-track"></span></span></label>
+            <label class="switch-row"><span>Rendering</span><span class="switch"><input type="checkbox" name="enabled_rendering" /><span class="switch-track"></span></span></label>
+            <label class="switch-row"><span>Correlated insights</span><span class="switch"><input type="checkbox" name="enabled_correlated" /><span class="switch-track"></span></span></label>
+          </fieldset>
+
+          <fieldset class="card">
+            <legend>Network</legend>
+            <label>Slow request threshold (ms) <input type="number" name="slowRequestMs" min="0" /></label>
+            <label>Repeated-call window (ms) <input type="number" name="repeatedWindowMs" min="0" /></label>
+            <label>Repeated-call threshold (count) <input type="number" name="repeatedThreshold" min="1" /></label>
+            <label>Duplicate-call window (ms) <input type="number" name="duplicateWindowMs" min="0" /></label>
+            <label>Duplicate-call threshold (count) <input type="number" name="duplicateThreshold" min="1" /></label>
+            <label>Repeated-failure threshold (count) <input type="number" name="repeatedFailureThreshold" min="1" /></label>
+          </fieldset>
+
+          <fieldset class="card">
+            <legend>Polling detection</legend>
+            <label>Polling window (ms) <input type="number" name="pollingWindowMs" min="0" /></label>
+            <label>Polling threshold (count) <input type="number" name="pollingThreshold" min="1" /></label>
+            <label>Regularity tolerance (0–1, lower = stricter) <input type="number" step="0.05" name="pollingRegularityTolerance" min="0" max="1" /></label>
+            <label>State-change proximity (ms) <input type="number" name="stateChangeProximityMs" min="0" /></label>
+          </fieldset>
+
+          <fieldset class="card">
+            <legend>Performance</legend>
+            <label>Slow resource threshold (ms) <input type="number" name="slowResourceMs" min="0" /></label>
+            <label>Large resource threshold (bytes) <input type="number" name="largeResourceBytes" min="0" /></label>
+            <label>Large JS bundle threshold (bytes) <input type="number" name="largeScriptBytes" min="0" /></label>
+            <label>Long task threshold (ms) <input type="number" name="longTaskMs" min="0" /></label>
+            <label>DOMContentLoaded warning (ms) <input type="number" name="domContentLoadedWarnMs" min="0" /></label>
+            <label>Page load warning (ms) <input type="number" name="pageLoadWarnMs" min="0" /></label>
+          </fieldset>
+
+          <fieldset class="card">
+            <legend>Rendering</legend>
+            <label>DOM mutation window (ms) <input type="number" name="domMutationWindowMs" min="0" /></label>
+            <label>DOM mutation threshold (count) <input type="number" name="domMutationThreshold" min="1" /></label>
+            <label>Update-burst window (ms) <input type="number" name="domMutationBurstWindowMs" min="0" /></label>
+            <label>Update-burst threshold (batches) <input type="number" name="domMutationBurstThreshold" min="1" /></label>
+            <label>Large DOM update threshold (nodes) <input type="number" name="largeDomUpdateNodeThreshold" min="1" /></label>
+            <label>Layout-shift window (ms) <input type="number" name="layoutShiftWindowMs" min="0" /></label>
+            <label>Layout-shift count threshold <input type="number" name="layoutShiftCountThreshold" min="1" /></label>
+            <label>Layout-shift score threshold <input type="number" step="0.05" name="layoutShiftScoreThreshold" min="0" /></label>
+          </fieldset>
+
+          <fieldset class="card">
+            <legend>Correlation</legend>
+            <label>Correlation window (ms) <input type="number" name="correlationWindowMs" min="0" /></label>
+          </fieldset>
+
+          <fieldset class="card">
+            <legend>Storage</legend>
+            <label>Max findings kept per tab <input type="number" name="maxFindingsPerTab" min="10" /></label>
+            <label>Max timeline events kept per tab <input type="number" name="maxTimelineEventsPerTab" min="10" /></label>
+          </fieldset>
+
+          <fieldset class="card card-wide" id="ai-fieldset">
+            <legend>AI Assistant</legend>
+
+            <p class="hint ai-privacy-note">
+              <strong>Off by default.</strong> When enabled, the "Analyze with AI" button on a finding sends
+              only structured data to the provider below: the finding's title/description/evidence (already
+              shown in this UI), nearby timeline entries, and related finding titles. It <strong>never</strong>
+              sends request/response bodies, cookies, or page source — those are never collected in the first
+              place. Anything that looks like a token, JWT, or email address in a URL is redacted before
+              sending, even to a local provider.
+            </p>
+
+            <label class="switch-row"><span>Enable the AI assistant</span><span class="switch"><input type="checkbox" name="ai_enabled" /><span class="switch-track"></span></span></label>
+
+            <label>
+              Provider
+              <select name="ai_provider" id="ai-provider-select">
+                <option value="heuristic">Rule-based (no model, works offline)</option>
+                <option value="ollama">Ollama — local open-weight model</option>
+                <option value="chrome-builtin">Chrome on-device AI (Gemini Nano)</option>
+              </select>
+            </label>
+
+            <div id="ollama-fields">
+              <label>Ollama endpoint <input type="text" name="ai_ollamaEndpoint" /></label>
+              <label>Ollama model <input type="text" name="ai_ollamaModel" /></label>
+              <p class="hint">
+                Requires <a href="https://ollama.com" target="_blank" rel="noopener">Ollama</a> running locally
+                with a model pulled (e.g. <code>ollama pull llama3.2</code>). If the check below fails with a
+                connection error, start Ollama with <code>OLLAMA_ORIGINS=chrome-extension://*</code> set so it
+                accepts requests from this extension.
+              </p>
+            </div>
+
+            <div class="actions">
+              <button type="button" id="ai-check-btn" class="btn btn-secondary">Check provider availability</button>
+              <span id="ai-check-status"></span>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="save-bar">
+          <button type="submit" class="btn btn-primary">Save changes</button>
+          <button type="button" id="reset-btn" class="btn btn-secondary">Reset to defaults</button>
+          <span id="status"></span>
+        </div>
+      </form>
+    </div>
 
     <script src="options.js"></script>
   </body>

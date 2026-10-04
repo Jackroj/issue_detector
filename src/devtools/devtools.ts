@@ -1,1 +1,1 @@
-chrome.devtools.panels.create("Issue Detector", "icons/icon.png", "panel.html");
+chrome.devtools.panels.create("Issue Detector", "icons/icon16.png", "panel.html");
